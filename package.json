@@ -1,6 +1,6 @@
 {
   "name": "mongolass-plugin-populate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "[mongolass](https://github.com/mongolass/mongolass) `.populate` plugin",
   "main": "index.js",
   "scripts": {
@@ -19,13 +19,12 @@
     "node": ">=4"
   },
   "dependencies": {
-    "dot-prop": "2.4.0",
     "lodash": "4.15.0"
   },
   "devDependencies": {
     "co-mocha": "^1.1.2",
     "mocha": "^2.4.5",
-    "mongolass": "^1.1.0"
+    "mongolass": "^1.2.0"
   },
   "repository": {
     "type": "git",

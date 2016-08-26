@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const dotProp = require('dot-prop');
 
 module.exports = {
   afterFind: function (results, opt) {
@@ -45,13 +44,13 @@ function bindPopulate(results, opt) {
     })
     .then(obj => {
       return _.filter(results, result => {
-        let refe = dotProp.get(result, opt.path).toString();
+        let refe = _.get(result, opt.path).toString();
         if (!obj[refe]) {
           return false;
         }
         /* istanbul ignore else */
         if (omitId) delete obj[refe]._id;
-        dotProp.set(result, opt.path, obj[refe]);
+        _.set(result, opt.path, obj[refe]);
         return true;
       });
     });
