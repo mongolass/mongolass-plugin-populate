@@ -11,7 +11,7 @@ const User = mongolass.model('User');
 
 User.plugin('POPULATE', require('./index'));
 
-describe('populate', function () {
+describe('mongolass-plugin-populate', function () {
   before(function* () {
     yield mongolass.model('User').insertOne({ name: 'aaa', age: 2 });
     yield mongolass.model('User').insertOne({ name: 'bbb', age: 1 });

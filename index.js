@@ -7,13 +7,16 @@ module.exports = {
     return bindPopulate.call(this, results, opt);
   },
   afterFindOne: function (result, opt) {
-    return bindPopulate.call(this, [result], opt).then(result => result[0]);
+    return bindPopulate.call(this, [result], opt).then(result => result[0] || null);
   }
 };
 
 function bindPopulate(results, opt) {
   if (!opt.path || !opt.model) {
     throw new TypeError('No .pouplate path or model');
+  }
+  if (!results.length) {
+    return results;
   }
   let keys = _.map(results, opt.path);
   let query = opt.match || {};
@@ -22,7 +25,6 @@ function bindPopulate(results, opt) {
   query._id = { $in: keys };
   if (opt.select) {
     options.fields = opt.select;
-    /* istanbul ignore else */
     if (options.fields._id === 0) {
       omitId = true;
       if (Object.keys(options.fields).length > 1) {
@@ -48,7 +50,6 @@ function bindPopulate(results, opt) {
         if (!obj[refe]) {
           return false;
         }
-        /* istanbul ignore else */
         if (omitId) delete obj[refe]._id;
         _.set(result, opt.path, obj[refe]);
         return true;
