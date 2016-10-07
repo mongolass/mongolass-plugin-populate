@@ -1,5 +1,6 @@
 'use strict';
 
+require('co-mocha');
 const MONGODB = process.env.MONGODB || 'mongodb://localhost:27017/test';
 
 const _ = require('lodash');
@@ -9,6 +10,7 @@ const mongolass = new Mongolass(MONGODB);
 
 const User = mongolass.model('User');
 
+mongolass.plugin('populate', require('./index'));
 User.plugin('POPULATE', require('./index'));
 
 describe('mongolass-plugin-populate', function () {
@@ -56,7 +58,7 @@ describe('mongolass-plugin-populate', function () {
       .find()
       .select({ name: 1 })
       .POPULATE({ path: '_id', model: 'User' })
-      .POPULATE({ path: '_id._id', model: User })
+      .populate({ path: '_id._id', model: User })
       .exec()
       .then(results => {
         return _.map(results, result => {
