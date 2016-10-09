@@ -34,7 +34,7 @@ function bindPopulate(results, opt) {
       }
     }
   }
-  let model = ('string' === typeof opt.model) ? this.model(opt.model, null, opt.options) : opt.model;
+  let model = ('string' === typeof opt.model) ? this._model.model(opt.model, null, opt.options) : opt.model;
   return model
     .find(query, options)
     .exec()
@@ -45,14 +45,14 @@ function bindPopulate(results, opt) {
       }, {});
     })
     .then(obj => {
-      return _.filter(results, result => {
-        let refe = _.get(result, opt.path).toString();
-        if (!obj[refe]) {
-          return false;
+      _.forEach(results, result => {
+        let refe = _.get(result, opt.path);
+        try { refe = refe.toString(); } catch (e) {}
+        if (refe && obj[refe]) {
+          if (omitId) delete obj[refe]._id;
+          _.set(result, opt.path, obj[refe]);
         }
-        if (omitId) delete obj[refe]._id;
-        _.set(result, opt.path, obj[refe]);
-        return true;
       });
+      return results;
     });
 }
