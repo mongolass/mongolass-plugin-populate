@@ -13,7 +13,7 @@ module.exports = {
 
 function bindPopulate(results, opt) {
   if (!opt.path || !opt.model) {
-    throw new TypeError('No .pouplate path or model');
+    throw new TypeError('No .populate path or model');
   }
   if (!results.length) {
     return results;
