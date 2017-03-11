@@ -26,13 +26,13 @@ describe('mongolass-plugin-populate', function () {
     try {
       yield User.find().POPULATE({ path: '_id' });
     } catch(e) {
-      assert.deepEqual(e.message, 'No .pouplate path or model');
+      assert.deepEqual(e.message, 'No .populate path or model');
     }
 
     try {
       yield User.find().POPULATE({ model: 'User' });
     } catch(e) {
-      assert.deepEqual(e.message, 'No .pouplate path or model');
+      assert.deepEqual(e.message, 'No .populate path or model');
     }
   });
 
