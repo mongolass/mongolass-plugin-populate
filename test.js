@@ -8,8 +8,10 @@ const Mongolass = require('mongolass');
 const mongolass = new Mongolass(MONGODB);
 
 const User = mongolass.model('User');
+const Group = mongolass.model('Group');
 
 User.plugin('POPULATE', require('./index'));
+Group.plugin('POPULATE', require('./index'));
 
 describe('mongolass-plugin-populate', function () {
   before(function* () {
@@ -19,6 +21,7 @@ describe('mongolass-plugin-populate', function () {
 
   after(function* () {
     yield mongolass.model('User').remove();
+    yield mongolass.model('Group').remove();
     mongolass.disconnect();
   });
 
@@ -123,9 +126,22 @@ describe('mongolass-plugin-populate', function () {
       .find()
       .select({ name: 1 })
       .POPULATE({ path: '_id', select: { age: 1 }, model: 'User' })
-      .populate({ path: '_id._id', match: { name: 'aaa' }, model: User });
+      .POPULATE({ path: '_id._id', match: { name: 'aaa' }, model: User });
     assert.deepEqual(users, [
       { _id: { _id: { _id: 1, name: 'aaa', age: 1 }, age: 1 }, name: 'aaa' },
+      { _id: { _id: 2, age: 2 }, name: 'bbb' }
     ]);
+  });
+
+  it('populate array', function* () {
+    const users = yield User.find()
+    const userIds = users.map(user => user._id)
+    yield mongolass.model('Group').create({ name: 'test', select: { _id: 0 }, users: userIds });
+
+    const group = yield Group
+      .findOne()
+      .POPULATE({ path: 'users', model: 'User' })
+
+    assert.deepEqual(group.users, users)
   });
 });

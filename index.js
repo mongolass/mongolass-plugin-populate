@@ -18,7 +18,17 @@ function bindPopulate(results, opt) {
   if (!results.length) {
     return results;
   }
-  let keys = _.map(results, opt.path);
+
+  let keys = []
+  // populate array
+  _.forEach(results, (result) => {
+    const refes = _.get(result, opt.path)
+    if (Array.isArray(refes)) {
+      keys = keys.concat(refes)
+    } else {
+      keys.push(refes)
+    }
+  });
   let query = opt.match || {};
   let options = {};
   let omitId = false;
@@ -46,13 +56,25 @@ function bindPopulate(results, opt) {
     })
     .then(obj => {
       _.forEach(results, result => {
-        let refe = _.get(result, opt.path);
-        try { refe = refe.toString(); } catch (e) {}
-        if (refe && obj[refe]) {
-          if (omitId) delete obj[refe]._id;
-          _.set(result, opt.path, obj[refe]);
+        let refes = _.get(result, opt.path);
+        // array
+        if (Array.isArray(refes)) {
+          _.forEach(refes, (refe, index) => {
+            try { refe = refe.toString(); } catch (e) {}
+            if (refe && obj[refe]) {
+              if (omitId) delete obj[refe]._id;
+              _.set(result, `${opt.path}[${index}]`, obj[refe]);
+            }
+          })
+        } else {
+          try { refes = refes.toString(); } catch (e) {}
+          if (refes && obj[refes]) {
+            if (omitId) delete obj[refes]._id;
+            _.set(result, opt.path, obj[refes]);
+          }
         }
       });
+
       return results;
     });
 }

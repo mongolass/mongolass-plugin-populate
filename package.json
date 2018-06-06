@@ -1,29 +1,25 @@
 {
   "name": "mongolass-plugin-populate",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "[mongolass](https://github.com/mongolass/mongolass) `.populate` plugin",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --harmony test.js"
+    "test": "./node_modules/.bin/mocha test.js"
   },
   "keywords": [
     "mongodb",
     "mongolass"
   ],
-  "author": {
-    "name": "nswbmw",
-    "email": "nswbmw1992@gmail.com"
-  },
   "license": "MIT",
   "engines": {
     "node": ">=4"
   },
   "dependencies": {
-    "lodash": "4.15.0"
+    "lodash": "4.17.10"
   },
   "devDependencies": {
-    "co-mocha": "^1.1.2",
-    "mocha": "^2.4.5",
+    "co-mocha": "^1.2.2",
+    "mocha": "^5.2.0",
     "mongolass": "*"
   },
   "repository": {
