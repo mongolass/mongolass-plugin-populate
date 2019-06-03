@@ -1,6 +1,6 @@
 {
   "name": "mongolass-plugin-populate",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "[mongolass](https://github.com/mongolass/mongolass) `.populate` plugin",
   "main": "index.js",
   "scripts": {

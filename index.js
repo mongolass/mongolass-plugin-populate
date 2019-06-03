@@ -63,14 +63,24 @@ function bindPopulate(results, opt) {
             try { refe = refe.toString(); } catch (e) {}
             if (refe && obj[refe]) {
               if (omitId) delete obj[refe]._id;
-              _.set(result, `${opt.path}[${index}]`, obj[refe]);
+              if (typeof opt.as === 'string') {
+                _.set(result, `${opt.as}[${index}]`, obj[refe]);
+                _.unset(result, `${opt.path}[${index}]`);
+              } else {
+                _.set(result, `${opt.path}[${index}]`, obj[refe]);
+              }
             }
           })
         } else {
           try { refes = refes.toString(); } catch (e) {}
           if (refes && obj[refes]) {
             if (omitId) delete obj[refes]._id;
-            _.set(result, opt.path, obj[refes]);
+            if (typeof opt.as === 'string') {
+              _.set(result, opt.as, obj[refes]);
+              _.unset(result, opt.path);
+            } else {
+              _.set(result, opt.path, obj[refes]);
+            }
           }
         }
       });
