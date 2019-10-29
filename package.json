@@ -15,7 +15,7 @@
     "node": ">=4"
   },
   "dependencies": {
-    "lodash": "4.17.10"
+    "lodash": "4.17.15"
   },
   "devDependencies": {
     "co-mocha": "^1.2.2",
