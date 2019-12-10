@@ -3,6 +3,9 @@
 const _ = require('lodash');
 
 module.exports = {
+  afterAggregate: function (results, opt) {
+    return bindPopulate.call(this, results, opt);
+  },
   afterFind: function (results, opt) {
     return bindPopulate.call(this, results, opt);
   },
