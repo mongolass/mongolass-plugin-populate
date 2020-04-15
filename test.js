@@ -1,7 +1,7 @@
 'use strict';
 
 require('co-mocha');
-const MONGODB = process.env.MONGODB || 'mongodb://localhost:27017/test';
+const MONGODB = process.env.MONGODB || 'mongodb://localhost:27017/test_mongolass_plugin_populate';
 
 const assert = require('assert');
 const Mongolass = require('mongolass');
@@ -143,5 +143,27 @@ describe('mongolass-plugin-populate', function () {
       .POPULATE({ path: 'users', model: 'User' })
 
     assert.deepEqual(group.users, users)
+  });
+
+  it.only('populate with array arguments', function* () {
+    let users = yield User
+      .find()
+      .select({ name: 1 })
+      .POPULATE([{ path: '_id', select: { age: 1 }, model: 'User' }])
+      .populate({ path: '_id._id', select: { _id: 0 }, model: User });
+    assert.deepEqual(users, [
+      { _id: { _id: { name: 'aaa', age: 1 }, age: 1 }, name: 'aaa' },
+      { _id: { _id: { name: 'bbb', age: 2 }, age: 2 }, name: 'bbb' }
+    ]);
+
+    users = yield User
+      .find()
+      .select({ name: 1 })
+      .POPULATE({ path: '_id', select: { age: 1 }, model: 'User' })
+      .POPULATE({ path: '_id._id', match: { name: 'aaa' }, model: User });
+    assert.deepEqual(users, [
+      { _id: { _id: { _id: 1, name: 'aaa', age: 1 }, age: 1 }, name: 'aaa' },
+      { _id: { _id: 2, age: 2 }, name: 'bbb' }
+    ]);
   });
 });

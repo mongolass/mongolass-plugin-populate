@@ -1,25 +1,29 @@
-'use strict';
-
-const _ = require('lodash');
+const _ = require('lodash')
 
 module.exports = {
-  afterAggregate: function (results, opt) {
-    return bindPopulate.call(this, results, opt);
+  afterAggregate: function (results, opts) {
+    opts = Array.isArray(opts) ? opts : [opts]
+    return Promise.all(opts.map(opt => bindPopulate.call(this, results, opt)))
+      .then(() => results)
   },
-  afterFind: function (results, opt) {
-    return bindPopulate.call(this, results, opt);
+  afterFind: function (results, opts) {
+    opts = Array.isArray(opts) ? opts : [opts]
+    return Promise.all(opts.map(opt => bindPopulate.call(this, results, opt)))
+      .then(() => results)
   },
-  afterFindOne: function (result, opt) {
-    return bindPopulate.call(this, [result], opt).then(result => result[0] || null);
+  afterFindOne: function (result, opts) {
+    opts = Array.isArray(opts) ? opts : [opts]
+    return Promise.all(opts.map(opt => bindPopulate.call(this, [result], opt)))
+      .then(() => result)
   }
-};
+}
 
 function bindPopulate(results, opt) {
   if (!opt.path || !opt.model) {
-    throw new TypeError('No .populate path or model');
+    throw new TypeError('No .populate path or model')
   }
   if (!results.length) {
-    return results;
+    return results
   }
 
   let keys = []
@@ -31,63 +35,63 @@ function bindPopulate(results, opt) {
     } else {
       keys.push(refes)
     }
-  });
-  let query = opt.match || {};
-  let options = {};
-  let omitId = false;
-  query._id = { $in: keys };
+  })
+  let query = opt.match || {}
+  let options = {}
+  let omitId = false
+  query._id = { $in: keys }
   if (opt.select) {
-    options.fields = opt.select;
-    if (options.fields._id === 0) {
-      omitId = true;
-      if (Object.keys(options.fields).length > 1) {
-        options.fields._id = 1;
+    options.projection = opt.select
+    if (options.projection._id === 0) {
+      omitId = true
+      if (Object.keys(options.projection).length > 1) {
+        options.projection._id = 1
       } else {
-        delete options.fields._id;
+        delete options.projection._id
       }
     }
   }
-  let model = ('string' === typeof opt.model) ? this._model.model(opt.model, null, opt.options) : opt.model;
+  let model = ('string' === typeof opt.model) ? this._model.model(opt.model, null, opt.options) : opt.model
   return model
     .find(query, options)
     .exec()
     .then(populates => {
       return _.reduce(populates, function(obj, value) {
-        obj[value._id.toString()] = value;
-        return obj;
-      }, {});
+        obj[value._id.toString()] = value
+        return obj
+      }, {})
     })
     .then(obj => {
       _.forEach(results, result => {
-        let refes = _.get(result, opt.path);
+        let refes = _.get(result, opt.path)
         // array
         if (Array.isArray(refes)) {
           _.forEach(refes, (refe, index) => {
-            try { refe = refe.toString(); } catch (e) {}
+            try { refe = refe.toString() } catch (e) {}
             if (refe && obj[refe]) {
-              if (omitId) delete obj[refe]._id;
+              if (omitId) delete obj[refe]._id
               if (typeof opt.as === 'string') {
-                _.set(result, `${opt.as}[${index}]`, obj[refe]);
-                _.unset(result, `${opt.path}[${index}]`);
+                _.set(result, `${opt.as}[${index}]`, obj[refe])
+                _.unset(result, `${opt.path}[${index}]`)
               } else {
-                _.set(result, `${opt.path}[${index}]`, obj[refe]);
+                _.set(result, `${opt.path}[${index}]`, obj[refe])
               }
             }
           })
         } else {
-          try { refes = refes.toString(); } catch (e) {}
+          try { refes = refes.toString() } catch (e) {}
           if (refes && obj[refes]) {
-            if (omitId) delete obj[refes]._id;
+            if (omitId) delete obj[refes]._id
             if (typeof opt.as === 'string') {
-              _.set(result, opt.as, obj[refes]);
-              _.unset(result, opt.path);
+              _.set(result, opt.as, obj[refes])
+              _.unset(result, opt.path)
             } else {
-              _.set(result, opt.path, obj[refes]);
+              _.set(result, opt.path, obj[refes])
             }
           }
         }
-      });
+      })
 
-      return results;
-    });
+      return results
+    })
 }
