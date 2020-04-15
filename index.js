@@ -36,6 +36,12 @@ function bindPopulate(results, opt) {
       keys.push(refes)
     }
   })
+  keys = _.compact(keys)
+  // empty path, return
+  if (!keys.length) {
+    return results
+  }
+
   let query = opt.match || {}
   let options = {}
   let omitId = false
